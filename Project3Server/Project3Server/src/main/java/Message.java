@@ -6,19 +6,12 @@ public class Message implements Serializable {
     static final long serialVersionUID = 42L;
 
     public enum MessageType {
-        TEXT,
-        JOIN,
-        LEAVE,
-        //mother
-        GROUP_CREATE,
-        GROUP_JOIN,
-        GROUP_LEAVE,
-        GROUP_MESSAGE,
-        GROUPCHAT_MESSAGE,
-        PRIVATE_MESSAGE,
-        USER_ID_CREATE,
-        ERROR,
-        LIST_OF_NAMES
+        REGULAR_MOVE,
+        MISSLE_MOVE,
+        HAIL_MARY_MOVE,
+        MISS,
+        HIT,
+        AVAILABLE_PLAYERS
     }
 
     private MessageType type;
@@ -58,17 +51,6 @@ public class Message implements Serializable {
         receivers = clientsOnServer;
         content = null;
         sender = "Server";
-    }
-
-    //  Constructor for Private Messaging
-    public Message(MessageType type, String sender, String receiver, String content) {
-        this.type = type;
-        this.sender = sender;
-        this.receiver = receiver;
-        this.content = content;
-        List<String> oneReceiver = new ArrayList<>();
-        oneReceiver.add(receiver);
-        receivers = oneReceiver;
     }
 
     public MessageType getType() {
