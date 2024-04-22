@@ -6,12 +6,9 @@ public class Message implements Serializable {
     static final long serialVersionUID = 42L;
 
     public enum MessageType {
-        TEXT,
-        JOIN,
+
         LEAVE,
-        GROUP_CREATE,
-        GROUP_JOIN,
-        GROUP_LEAVE,
+
         GROUP_MESSAGE,
         GROUPCHAT_MESSAGE,
         PRIVATE_MESSAGE,
