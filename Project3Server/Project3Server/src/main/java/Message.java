@@ -9,6 +9,7 @@ public class Message implements Serializable {
         TEXT,
         JOIN,
         LEAVE,
+        //mother
         GROUP_CREATE,
         GROUP_JOIN,
         GROUP_LEAVE,
