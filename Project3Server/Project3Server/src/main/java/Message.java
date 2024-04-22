@@ -8,7 +8,7 @@ public class Message implements Serializable {
     public enum MessageType {
         TEXT,
         JOIN,
-        LEAVE,
+        LEAV,
         GROUP_CREATE,
         GROUP_JOIN,
         GROUP_LEAVE,
