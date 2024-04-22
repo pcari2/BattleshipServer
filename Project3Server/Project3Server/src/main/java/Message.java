@@ -7,16 +7,17 @@ public class Message implements Serializable {
 
     public enum MessageType {
         REGULAR_MOVE,
-        MISSLE_MOVE,
+        MISSILE_MOVE,
         HAIL_MARY_MOVE,
         MISS,
         HIT,
-        AVAILABLE_PLAYERS
+        AVAILABLE_PLAYERS,
+        LOOKING_FOR_GAME,
+        GAME_FOUND
     }
 
     private MessageType type;
     private String sender;
-    private List<String> receivers;
     private String content;
     private String receiver;
 
@@ -24,7 +25,6 @@ public class Message implements Serializable {
     public Message(MessageType type, String content) {
         sender = content;
         this.type = type;
-        receivers = null;
         this.content = content;
     }
 
@@ -33,13 +33,11 @@ public class Message implements Serializable {
         this.sender = sender;
         this.type = type;
         this.content = content;
-        receivers = null;
     }
 
     //      Constructor for a group message / to all
     public Message(MessageType type, String sender, List<String> receivers, String content) {
         this.sender = sender;
-        this.receivers = receivers;
         this.type = type;
         this.content = content;
 
@@ -48,7 +46,6 @@ public class Message implements Serializable {
     //      Constructor for Transferring all clients on server
     public Message(MessageType type, List<String> clientsOnServer) {
         this.type = type;
-        receivers = clientsOnServer;
         content = null;
         sender = "Server";
     }
@@ -62,12 +59,6 @@ public class Message implements Serializable {
     public void setSender(String sender) {
         this.sender = sender;
     }
-    public List<String> getReceivers() {
-        return receivers;
-    }
-    public void setReceivers() {
-        this.receivers = receivers;
-    }
     public String getContent() {
         return content;
     }
@@ -77,19 +68,9 @@ public class Message implements Serializable {
     public String getReceiver() { return receiver; }
     public void setReceiver() {this.receiver = receiver; }
 
-    public String toString() {
-
+    public String toMeessageString() {
         String messageString = "Type: " + type + "\n" + "Sender: " + sender + "\n";
-
-        if (receivers != null) {
-            messageString += "Receivers: "; // TODO
-        }
-
         messageString += "Content: " + content;
-        if (type == MessageType.USER_ID_CREATE) {
-            messageString = sender + " changed their username to " + content; // username change String
-        }
-
         return messageString;
     }
 }
