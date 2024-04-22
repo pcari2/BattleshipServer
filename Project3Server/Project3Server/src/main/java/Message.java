@@ -8,7 +8,7 @@ public class Message implements Serializable {
     public enum MessageType {
 
         LEAVE,
-
+        //mother
         GROUP_MESSAGE,
         GROUPCHAT_MESSAGE,
         PRIVATE_MESSAGE,
