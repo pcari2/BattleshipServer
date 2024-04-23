@@ -13,13 +13,18 @@ public class Message implements Serializable {
         HIT,
         AVAILABLE_PLAYERS,
         LOOKING_FOR_GAME,
-        GAME_FOUND
+        GAME_FOUND,
+        LIST_OF_NAMES,
+        PLAYER_LOOKING_FOR_GAME
     }
 
     private MessageType type;
     private String sender;
     private String content;
     private String receiver;
+    private String username;
+
+    public Message() {}
 
     //     Constructor for Username creating
     public Message(MessageType type, String content) {
@@ -48,6 +53,22 @@ public class Message implements Serializable {
         this.type = type;
         content = null;
         sender = "Server";
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public MessageType getMessageType() {
+        return type;
+    }
+
+    public void setMessageType(MessageType type) {
+        this.type = type;
     }
 
     public MessageType getType() {

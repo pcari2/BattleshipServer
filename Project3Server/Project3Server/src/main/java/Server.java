@@ -16,17 +16,18 @@ import javafx.application.Platform;
 import javafx.scene.control.ListView;
 
 /*
-Paolo Carino CS 342 Project 3
-	A messaging application between clients and the server, where clients can
-	message each other as a whole group, or to individual clients they choose.
-	Additionally, the server has a GUI that keeps track of all the inputs and
-	messages being sent
+Paolo Carino CS 342 Project 4
+	A BattleShip Game that can
  */
 
 public class Server{
 
-	int count = 1;	
+	int count = 1;
+
 	ArrayList<ClientThread> clients = new ArrayList<ClientThread>();
+	ArrayList<String> Lobby = new ArrayList<String>();
+
+	ArrayList<ArrayList<String>> ActiveGameSessions = new ArrayList<ArrayList<String>>();
 	TheServer server;
 	private Consumer<Message> callback;
 	HashMap<String, ClientThread> clientsHashMap = new HashMap<>();
@@ -115,25 +116,15 @@ public class Server{
 					System.out.println("Streams not open");
 				}
 
-				// Sends to everyone that clientThread joined
-				Message ServerJoinMessage = new Message(Message.MessageType.GROUP_MESSAGE, "Server", "user" + count + " has joined");
-				updateClients(ServerJoinMessage);
-
-				// Updates the Connected Clients List
-				sendUserListToClients();
-
-				// Outputs it in the ServerGUI
-				callback.accept(ServerJoinMessage);
-
 
 				 while(true) {
 					    try {
-					    	Message data = (Message) in.readObject(); // reads in Message Sent
+							Message data = (Message) in.readObject(); // reads in Message Sent
 
-							// If the message is not a Username then send to the GUI
-							if (data.getType() != Message.MessageType.USER_ID_CREATE) {
-								callback.accept(data);
-							}
+//							// If the message is not a Username then send to the GUI
+//							if (data.getType() != Message.MessageType.USER_ID_CREATE) {
+//								callback.accept(data);
+//							}
 
 							// If the username hasn't been set use the Constructor user# as username
 							if (data.getSender() == null) {
@@ -143,60 +134,40 @@ public class Server{
 
 							switch (data.getType()) {
 
-								// Create a username
-								case USER_ID_CREATE:
-									ClientThread client = clientsHashMap.get(username);
-									String newUsername = data.getContent();
+								case PLAYER_LOOKING_FOR_GAME:
+									// if there is another player looking for a game (Lobby size is >= 2), add them to ArrayList "ActiveGameSessions"
+									// send message back to both Clients (type: GAME_FOUND)
+									ArrayList<String> activeGameSession = null;
+									if (!Lobby.isEmpty()) {
+										//add the first player in lobby to ActiveGameSession
+										String player1 = Lobby.get(0); // Get player from front of list
+										activeGameSession = new ArrayList<>();
+										activeGameSession.add(player1);
+										activeGameSession.add(data.getUsername());
 
-									// If it already exists then send back an error Message
-									if (clientsHashMap.containsKey(newUsername)) {
-										Message usernameTakenMessage = new Message(Message.MessageType.ERROR, "Server", "Username is already taken");
-										client.send(usernameTakenMessage);
-									}
-									// If it doesn't change the username for the client
-									else {
-										if (client != null) {
-											String oldUsername = username;
+										// Add the activeGameSession to the ActiveGameSessions list
+										ActiveGameSessions.add(activeGameSession);
 
-											// removes the old username's hashmap bucket
-											clientsHashMap.remove(oldUsername);
-											client.setUsername(newUsername);
+										Message gameFoundMessagePlayer1 = new Message();
+										gameFoundMessagePlayer1.setMessageType(Message.MessageType.GAME_FOUND);
+										clientsHashMap.get(player1).send(gameFoundMessagePlayer1);
 
-											// adds it back with the new username
-											clientsHashMap.put(newUsername, client);
-											Message usernameChange = new Message(Message.MessageType.USER_ID_CREATE, oldUsername, newUsername);
-											sendUserListToClients();
+										Message gameFoundMessagePlayer2 = new Message();
+										gameFoundMessagePlayer1.setMessageType(Message.MessageType.GAME_FOUND);
+										clientsHashMap.get(data.getUsername()).send(gameFoundMessagePlayer2);
 
-											// Sends message to the server
-											callback.accept(usernameChange);
-										}
+										Lobby.remove(0);
+									} else {
+										Lobby.add(data.getUsername());
 									}
 									break;
 
-								// Sends message to all clients connected
-								case GROUP_MESSAGE:
-									for (ClientThread clientThread : clientsHashMap.values()) {
-										clientThread.send(data);
-									}
-									break;
+//								case REGULAR_MOVE:
 
-								// Sends message to those in groupchat only
-								case GROUPCHAT_MESSAGE:
-									List<String> receivers = data.getReceivers();
-									for (String name : receivers) {
-										ClientThread receiverThread = clientsHashMap.get(name);
-										receiverThread.send(data);
-									}
 
-								// Sends message to individual client
-								case PRIVATE_MESSAGE:
-									String receiver = data.getReceiver();
-									ClientThread receiverThread = clientsHashMap.get(receiver);
-									receiverThread.send(data);
-								}
-					    	
-					    	}
-					    catch(Exception e) {  // if Client exists out
+
+							}
+						} catch(Exception e) {  // if Client exists out
 
 							clients.remove(this); // remove them from the list of clients
 
