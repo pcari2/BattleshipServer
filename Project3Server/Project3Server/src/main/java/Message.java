@@ -12,7 +12,8 @@ public class Message implements Serializable {
         MISS,
         HIT,
         AVAILABLE_PLAYERS,
-        LOOKING_FOR_GAME,
+        ERROR,
+        LEAVE,
         GAME_FOUND,
         LIST_OF_NAMES,
         PLAYER_LOOKING_FOR_GAME

@@ -162,7 +162,33 @@ public class Server{
 									}
 									break;
 
-//								case REGULAR_MOVE:
+								case REGULAR_MOVE:
+									// Receive move from client. This message should have the client's username.
+									// Use this client's username to find the username of complement client in ActiveGameSessions
+									// Send message with move to complement client
+									String currentUser = data.getUsername();
+
+									ArrayList<String> currentGameSession = null;
+									for (ArrayList<String> gameSession : ActiveGameSessions) {
+										if (gameSession.contains(currentUser)) {
+											currentGameSession = gameSession;
+											break;
+										}
+									}
+
+									if (currentGameSession != null) {
+										// Get the complement user's username
+										String complementUser = currentGameSession.get(0).equals(currentUser) ? currentGameSession.get(1) : currentGameSession.get(0);
+										Message moveMessage = new Message();
+										moveMessage.setMessageType(Message.MessageType.REGULAR_MOVE);
+										moveMessage.setUsername(currentUser); // Set the username of the player making the move
+										moveMessage.setContent(data.getContent());
+										clientsHashMap.get(complementUser).send(moveMessage); // Send the message to the complement user
+									} else {
+										System.out.println("Error: No active game session found for user " + currentUser);
+									}
+									break;
+
 
 
 
